@@ -3,6 +3,11 @@ package may.armorsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import may.armorsets.gui.screens.inventory.ASInventoryScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
@@ -19,8 +24,17 @@ public class ArmorSets {
 	public static final String MODID = "armorsets";
 
 	public static final Logger LOGGER = LogManager.getLogger();
+	public static Minecraft mc = Minecraft.getInstance();
 
 	public ArmorSets() {
+		
+		MinecraftForge.EVENT_BUS.register(this);
+		MinecraftForge.EVENT_BUS.register(ASInventoryScreen.class);
+		
+	}
+	
+	@SubscribeEvent
+	public void onWorldLoaded(final WorldEvent.Load event){
 	}
 	
 	

@@ -5,6 +5,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -16,18 +17,16 @@ import net.minecraftforge.items.IItemHandler;
  * @author Natascha May
  * @since 1.18.2-1.0
  */
-public class ArmorSetContainer implements Container {
+public class ArmorSetContainer extends AbstractContainerMenu implements Container{
 
 	private final int num_of_sets = 1;
 	private final int size_of_set = 4;
-	private final ArmorSetMenu menu;
 	private final Player owner;
 
 	private final NonNullList<ItemStack> armorSetItemStacks;
 
-	public ArmorSetContainer(ArmorSetMenu menu, Player owner) {
-		
-		this.menu = menu;
+	public ArmorSetContainer(Player owner) {
+		super(null, 0);
 		this.armorSetItemStacks = NonNullList.withSize(num_of_sets * size_of_set, ItemStack.EMPTY);
 		this.owner = owner;
 	}
@@ -39,51 +38,28 @@ public class ArmorSetContainer implements Container {
 		}
 	}
 
-	public void switchSets() {
+	public boolean switchSets() {
 		ArmorSets.LOGGER.debug("Switch Armor Sets");
-		// NonNullList<ItemStack> temp = owner.getInventory().armor;
-
-		// owner.getInventory().armor.forEach((x) ->
-		// owner.getInventory().removeItem(x));
-		// owner.getInventory().armor.forEach((x) -> owner.getInventory().);
-
-		// extractItem
-		// https://forums.minecraftforge.net/topic/75848-solved1144-remove-single-item-from-player-inventory/
-
-		// convert the saved slots armor_set to a collection of ItemStacks
-		// Collection<ItemStack> container_set = Arrays.stream(armor_set).map((slot) ->
-		// (ItemStack) slot.getItem()).collect(Collectors.toList());
-		// owner.getInventory().armor.addAll(container_set);
-
-		// temp.forEach((i) -> this.addItem(i));
-
-		// SETUP
-		LazyOptional<IItemHandler> itemHandlerLazy = owner.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-		if (!itemHandlerLazy.isPresent()) {
-			return;
+		
+		for(int i = 0; i < size_of_set; i++) {
+			
+			// EXTRACT FROM INVENTORY
+			ItemStack itemStack = owner.getInventory().armor.get(i);
+			ArmorSets.LOGGER.debug("extracted " + itemStack.toString() + " from inventory");
+			
+			// EXTRACT FROM ARMOR SET
+			ItemStack stackFromSet = getItem(i);
+			
+			ArmorSets.LOGGER.debug("extracted " + stackFromSet.toString() + " from armor set");
+	
+			// INSERT TO INVENTORY
+			owner.getInventory().armor.set(i, stackFromSet);
+	
+			// INSERT TO ARMOR SET
+			setItem(i, itemStack);
+			
 		}
-		IItemHandler itemHandler = itemHandlerLazy.resolve().get();
-
-		// EXTRACT FROM INVENTORY
-		// ItemStack itemStack = itemHandler.extractItem(Player.ARMOR_SLOT_OFFSET,
-		// LARGE_MAX_STACK_SIZE, false);
-		ItemStack itemStack = owner.getInventory().armor.get(0);
-		ArmorSets.LOGGER.debug("extracted " + itemStack.toString() + " from inventory");
-		// EXTRACT FROM ARMOR SET
-		ItemStack stackFromSet = getItem(0);
-		// ItemStack stackFromSet = armor_set[0].safeTake(LARGE_MAX_STACK_SIZE,
-		// LARGE_MAX_STACK_SIZE, owner);
-
-		ArmorSets.LOGGER.debug("extracted " + stackFromSet.toString() + " from armor set");
-
-		// INSERT TO INVENTORY
-		// itemHandler.insertItem(Player.ARMOR_SLOT_OFFSET, stackFromSet, false);
-		owner.getInventory().armor.set(0, stackFromSet);
-
-		// INSERT TO ARMOR SET
-		setItem(0, itemStack);
-		//inventoryMenu.slotsChanged(owner.getInventory());
-		// armor_set[0].safeInsert(itemStack);
+		return true;
 	}
 
 	@Override
@@ -131,10 +107,12 @@ public class ArmorSetContainer implements Container {
 	}
 
 	public void tick() {
+		/*
 		for(int i = 0; i < size_of_set; i++) {
 			ItemStack stackFromSet = armorSetItemStacks.get(0);
 			owner.getInventory().armor.set(0, stackFromSet);
 		}
+		*/
 	}
 
 	public NonNullList<ItemStack> getItems() {

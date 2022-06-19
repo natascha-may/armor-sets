@@ -1,22 +1,20 @@
 package may.armorsets;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import may.armorsets.gui.ArmorSetMenu;
-import may.armorsets.gui.screens.inventory.ArmorSetScreen;
-import may.armorsets.networking.ArmorSetsContainerSetContentPacket;
-import may.armorsets.networking.ArmorSetsMenuButtonClickPacket;
+import may.armorsets.gui.ArmorSetContainer;
 import may.armorsets.networking.ArmorSetsPacketHandler;
+import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,29 +41,27 @@ public class ArmorSets {
 	public static int packetMsgId = 0;
 	public static int containerMenuId = 0;
 	
-	private static HashMap<Integer, ArmorSetMenu> containerMenus = new HashMap<Integer, ArmorSetMenu>();
 	
-	public static final KeyMapping AMOR_SETS_MENU_KEY = new KeyMapping("Armor Sets Menu", 67, KeyMapping.CATEGORY_INTERFACE);
+	public static final KeyMapping AMOR_SETS_SWITCH_KEY = new KeyMapping("Armor Sets Switch", 67, KeyMapping.CATEGORY_INTERFACE);
+	
+	public static Map<Player, ArmorSetContainer> containerMap = new HashMap<Player, ArmorSetContainer>();
 	
 	public ArmorSets() {
 		
 		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(ArmorSetScreen.class);
 		
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		// Register the setup method for modloading
 		bus.addListener(this::onFMLClientSetup_registerKeyBindings);
 		
-		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsMenuButtonClickPacket.class,
-				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsMenuButtonClickPacket(buff), (msg, ctx) -> ArmorSetsMenuButtonClickPacket.handle(msg, ctx));
-		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsContainerSetContentPacket.class,
-				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsContainerSetContentPacket(buff), (msg, ctx) -> ArmorSetsContainerSetContentPacket.handle(msg, ctx));
 		
+		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsSwitchSetsPacket.class,
+				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsSwitchSetsPacket(buff), (msg, ctx) -> ArmorSetsSwitchSetsPacket.handle(msg, ctx));
 		
 	}
 	
 	private void onFMLClientSetup_registerKeyBindings(final FMLClientSetupEvent event) {
-		net.minecraftforge.client.ClientRegistry.registerKeyBinding(AMOR_SETS_MENU_KEY);
+		net.minecraftforge.client.ClientRegistry.registerKeyBinding(AMOR_SETS_SWITCH_KEY);
 	}
 	
 	@SubscribeEvent
@@ -73,31 +69,17 @@ public class ArmorSets {
 	}
 	
 	@SubscribeEvent
+	public void onPlayerJoin_addToContainerMap(final PlayerLoggedInEvent event){
+		containerMap.put(event.getPlayer(), new ArmorSetContainer(event.getPlayer()));
+	}
+	
+	
+	@SubscribeEvent
     public void onKeyPress (InputEvent.KeyInputEvent e) {
-        if (AMOR_SETS_MENU_KEY.isDown()) {
-        	ArmorSetMenu menu = ArmorSetMenu.openMenu(containerMenuId);
-            containerMenus.put(containerMenuId, menu);
-    		containerMenuId++;
+        if (AMOR_SETS_SWITCH_KEY.isDown()) {
+        	ArmorSets.LOGGER.debug("Key press recognized");
+    		ArmorSetsPacketHandler.INSTANCE.sendToServer(new ArmorSetsSwitchSetsPacket());
         }
     }
 
-	
-	/*
-	@SubscribeEvent
-	public void setScreen(ScreenOpenEvent event) {
-		if(!(event.getScreen() instanceof InventoryScreen)) {
-			return;
-		}
-		if(event.getScreen() instanceof ArmorSetScreen) {
-			return;
-		}
-		
-		
-		event.setScreen(asInventoryScreen);
-	}*/
-	
-	
-	public static ArmorSetMenu getContainerMenu(int containerId) {
-		return containerMenus.get(containerId);
-	}
 }

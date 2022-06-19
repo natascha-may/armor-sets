@@ -3,12 +3,10 @@ package may.armorsets.networking;
 import java.util.function.Supplier;
 
 import may.armorsets.ArmorSets;
-import may.armorsets.gui.ArmorSetMenu;
+import may.armorsets.gui.ArmorSetContainer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkEvent.Context;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
@@ -22,33 +20,19 @@ public class ArmorSetsPacketHandler{
 	  PROTOCOL_VERSION::equals
 	);
 	
-	public static void handleMenuButtonClick(ArmorSetsMenuButtonClickPacket msg, Supplier<NetworkEvent.Context> ctx) {
+	public static void handleSwitchSets(ArmorSetsSwitchSetsPacket msg, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			// Work that needs to be thread-safe (most work)
 			ServerPlayer sender = ctx.get().getSender(); // the client that sent this packet
 			// Do stuff
-			if (!msg.getPlayer().isSpectator()) {
-				AbstractContainerMenu menu = ArmorSets.getContainerMenu(msg.getContainerId());
-				boolean flag = menu.clickMenuButton(msg.getPlayer(), msg.getButtonId());
+			if (!sender.isSpectator()) {
+				ArmorSets.LOGGER.debug("Handle switch sets in PacketHandler");
+				ArmorSetContainer container = ArmorSets.containerMap.get(sender);
+				boolean flag = container.switchSets();
 				if (flag) {
-					menu.broadcastChanges();
+					container.broadcastChanges();
 				}
 			}
-		});
-		ctx.get().setPacketHandled(true);
-	}
-
-	public static void handleContainerSetContent(ArmorSetsContainerSetContentPacket msg, Supplier<Context> ctx) {
-		ctx.get().enqueueWork(() -> {
-			// Work that needs to be thread-safe (most work)
-			ServerPlayer sender = ctx.get().getSender(); // the client that sent this packet
-			// Do stuff
-			ArmorSetMenu menu = ArmorSets.getContainerMenu(msg.getContainerId());
-			boolean flag = menu.setContent(msg.getContent());
-			if (flag) {
-				menu.broadcastChanges();
-			}
-			
 		});
 		ctx.get().setPacketHandled(true);
 	}

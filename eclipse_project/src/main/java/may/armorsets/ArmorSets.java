@@ -47,7 +47,6 @@ public class ArmorSets {
 	public static final KeyMapping AMOR_SETS_SWITCH_KEY = new KeyMapping("Armor Sets Switch", 67, KeyMapping.CATEGORY_INTERFACE);
 	
 	
-	private static final int NUM_OF_SETS = 1;
 	static final int SIZE_OF_SET = 4;
 	
 	public ArmorSets() {

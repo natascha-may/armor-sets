@@ -13,15 +13,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -62,17 +61,8 @@ public class ArmorSets {
 		
 		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsSwitchSetsPacket.class,
 				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsSwitchSetsPacket(buff), (msg, ctx) -> ArmorSetsSwitchSetsPacket.handle(msg, ctx));
-		
-		// CapabilityManager.INSTANCE.register
-		// ItemStackHandler
-		// CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
 	}
 	
-	@SubscribeEvent
-	public static void onCommonSetup(FMLCommonSetupEvent event) {
-	    //CapabilityManager.INSTANCE.register(ItemStackHandler.class, new ItemStackHandler(), ItemStackHandler::new);
-	}
-
 
 	
 	private void onFMLClientSetup_registerKeyBindings(final FMLClientSetupEvent event) {
@@ -98,11 +88,6 @@ public class ArmorSets {
         if(event.getObject() instanceof  Player) {
             event.addCapability(new ResourceLocation(MODID, "armor_set"), new ArmorSetsCapabilityProvider());
         }
-    }
-	
-	@SubscribeEvent
-	public void register(RegisterCapabilitiesEvent event) {
-        event.register(ItemStackHandler.class);
     }
 
 	public static boolean switchSets(Player player) {
@@ -133,6 +118,26 @@ public class ArmorSets {
 			
 		}
 		return true;
+	}
+	
+	@SubscribeEvent
+	public void onPlayerDeath(final LivingDeathEvent event) {
+		if(!(event.getEntity() instanceof Player)) return;
+		
+		dropAllItems((Player) event.getEntity());
+	}
+
+
+
+	private void dropAllItems(Player player) {
+		LazyOptional<ItemStackHandler> capOptional = player.getCapability(ArmorSetsCapabilityProvider.INSTANCE, null);
+		if(!capOptional.isPresent()) return;
+		ItemStackHandler cap = capOptional.orElse(null);
+		
+		for(int i = 0; i < SIZE_OF_SET; i++) {
+			ItemStack stackToDrop = cap.extractItem(i, cap.getSlotLimit(i), false);
+			player.drop(stackToDrop, true, false);
+		}
 	}
     
 

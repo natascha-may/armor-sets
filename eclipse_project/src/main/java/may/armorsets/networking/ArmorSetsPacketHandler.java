@@ -3,7 +3,6 @@ package may.armorsets.networking;
 import java.util.function.Supplier;
 
 import may.armorsets.ArmorSets;
-import may.armorsets.gui.ArmorSetContainer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -27,11 +26,7 @@ public class ArmorSetsPacketHandler{
 			// Do stuff
 			if (!sender.isSpectator()) {
 				ArmorSets.LOGGER.debug("Handle switch sets in PacketHandler");
-				ArmorSetContainer container = ArmorSets.containerMap.get(sender);
-				boolean flag = container.switchSets();
-				if (flag) {
-					container.broadcastChanges();
-				}
+				ArmorSets.switchSets(sender);
 			}
 		});
 		ctx.get().setPacketHandled(true);

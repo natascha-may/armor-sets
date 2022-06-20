@@ -5,12 +5,10 @@ import org.apache.logging.log4j.Logger;
 
 import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -40,14 +38,12 @@ public class ArmorSets {
 
 	public static int packetMsgId = 0;
 
-	public static final KeyMapping AMOR_SETS_SWITCH_KEY = new KeyMapping("Armor Sets Switch", 86,
-			KeyMapping.CATEGORY_INTERFACE);
-
 	static final int SIZE_OF_SET = 4;
 
 	public ArmorSets() {
 
 		MinecraftForge.EVENT_BUS.register(this);
+		MinecraftForge.EVENT_BUS.register(ArmorSetsKeyBindings.class);
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		// Register the setup method for modloading
@@ -58,18 +54,12 @@ public class ArmorSets {
 				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsSwitchSetsPacket(buff),
 				(msg, ctx) -> ArmorSetsSwitchSetsPacket.handle(msg, ctx));
 	}
-
+	
+	
 	private void onFMLClientSetup_registerKeyBindings(final FMLClientSetupEvent event) {
-		net.minecraftforge.client.ClientRegistry.registerKeyBinding(AMOR_SETS_SWITCH_KEY);
+		net.minecraftforge.client.ClientRegistry.registerKeyBinding(ArmorSetsKeyBindings.AMOR_SETS_SWITCH_KEY);
 	}
-
-	@SubscribeEvent
-	public void onKeyPress(InputEvent.KeyInputEvent e) {
-		if (AMOR_SETS_SWITCH_KEY.isDown()) {
-			ArmorSets.LOGGER.debug("Key press recognized");
-			ArmorSetsPacketHandler.INSTANCE.sendToServer(new ArmorSetsSwitchSetsPacket());
-		}
-	}
+	
 
 	@SubscribeEvent
 	public void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
@@ -112,6 +102,7 @@ public class ArmorSets {
 
 	@SubscribeEvent
 	public void onPlayerDeath(final LivingDeathEvent event) {
+		if(event.getEntity().level.isClientSide) return;
 		if (!(event.getEntity() instanceof Player))
 			return;
 

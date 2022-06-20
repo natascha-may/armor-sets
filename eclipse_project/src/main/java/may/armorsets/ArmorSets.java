@@ -40,7 +40,7 @@ public class ArmorSets {
 
 	public static int packetMsgId = 0;
 
-	public static final KeyMapping AMOR_SETS_SWITCH_KEY = new KeyMapping("Armor Sets Switch", 89,
+	public static final KeyMapping AMOR_SETS_SWITCH_KEY = new KeyMapping("Armor Sets Switch", 86,
 			KeyMapping.CATEGORY_INTERFACE);
 
 	static final int SIZE_OF_SET = 4;

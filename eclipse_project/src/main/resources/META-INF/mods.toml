@@ -34,7 +34,7 @@ credits="Love you Foxi :)" #optional
 authors="Natascha May" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-This mod allows quick switching between multiple armor sets. Work in progress.'''
+This mod allows you to quick switch between two sets of armor with a button of your choice. The default button is "v", you can change it in the standard controls menu. You can switch instantly while fighting, crafting or looking at your inventory.'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 #[[dependencies.examplemod]] #optional
     # the modid of the dependency

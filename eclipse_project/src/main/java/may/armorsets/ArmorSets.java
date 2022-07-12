@@ -3,6 +3,8 @@ package may.armorsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import may.armorsets.config.Config;
+import may.armorsets.config.ConfigOptions;
 import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +19,10 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemStackHandler;
@@ -44,6 +49,8 @@ public class ArmorSets {
 
 	public ArmorSets() {
 
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.config);
+		
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(ArmorSetsKeyBindings.class);
 
@@ -55,6 +62,8 @@ public class ArmorSets {
 		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsSwitchSetsPacket.class,
 				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsSwitchSetsPacket(buff),
 				(msg, ctx) -> ArmorSetsSwitchSetsPacket.handle(msg, ctx));
+		
+		Config.loadConfig(Config.config, FMLPaths.CONFIGDIR.get().resolve(MODID + ".toml").toString());
 	}
 	
 	
@@ -108,8 +117,14 @@ public class ArmorSets {
 		if (!(event.getEntity() instanceof Player))
 			return;
 
-		if(event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+		if(ConfigOptions.followVanillaKeepInventoryRule.get()) {
+			if(event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+				return;
+		}
+		
+		if(ConfigOptions.keepArmorSetOnDeath.get()) {
 			return;
+		}
 		
 		dropAllItems((Player) event.getEntity());
 	}
@@ -121,8 +136,17 @@ public class ArmorSets {
 		if(event.getPlayer().level.isClientSide) return;
 
 		if(event.isWasDeath()) {
-			if(!event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
-				return;
+			if(ConfigOptions.followVanillaKeepInventoryRule.get()) {
+				if(!event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+					return;
+			}else {
+				if(!ConfigOptions.keepArmorSetOnDeath.get()) {
+					return;
+				}
+			}
+			
+			
+			
 		}
 		
 		event.getOriginal().reviveCaps();

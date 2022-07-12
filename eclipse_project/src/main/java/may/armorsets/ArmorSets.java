@@ -9,10 +9,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -106,9 +108,27 @@ public class ArmorSets {
 		if (!(event.getEntity() instanceof Player))
 			return;
 
+		if(event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+			return;
+		
 		dropAllItems((Player) event.getEntity());
 	}
 
+	
+	
+	@SubscribeEvent
+	public void onPlayerClone(final PlayerEvent.Clone event){
+		if(event.getPlayer().level.isClientSide) return;
+
+		if(event.isWasDeath()) {
+			if(!event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+				return;
+		}
+		
+		event.getOriginal().reviveCaps();
+		cloneSet(event.getOriginal(), event.getPlayer());		
+	}
+	
 	/**
 	 * Drops all items from the armor set of the given player.
 	 * 
@@ -123,6 +143,28 @@ public class ArmorSets {
 		for (int i = 0; i < SIZE_OF_SET; i++) {
 			ItemStack stackToDrop = cap.extractItem(i, cap.getSlotLimit(i), false);
 			player.drop(stackToDrop, true, false);
+		}
+	}
+	
+	/**
+	 * Clones the armor set from the player origP to the player newP.
+	 * @param origP
+	 * @param newP
+	 */
+	private void cloneSet(Player origP, Player newP) {
+		LazyOptional<ItemStackHandler> capOptionalOrig = origP.getCapability(ArmorSetsCapabilityProvider.AMOR_SET_CAP, null);
+		if (!capOptionalOrig.isPresent())
+			return;
+		ItemStackHandler capOrig = capOptionalOrig.orElse(null);
+		
+		LazyOptional<ItemStackHandler> capOptionalNew = newP.getCapability(ArmorSetsCapabilityProvider.AMOR_SET_CAP, null);
+		if (!capOptionalNew.isPresent())
+			return;
+		ItemStackHandler capNew = capOptionalNew.orElse(null);
+
+		for (int i = 0; i < SIZE_OF_SET; i++) {
+			ItemStack stackToClone = capOrig.getStackInSlot(i);
+			capNew.insertItem(i, stackToClone.copy(), false);
 		}
 	}
 

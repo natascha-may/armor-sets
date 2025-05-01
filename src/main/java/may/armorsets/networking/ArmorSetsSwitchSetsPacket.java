@@ -1,9 +1,10 @@
 package may.armorsets.networking;
 
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
 import java.util.function.Supplier;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 /**
  * This packet is sent from the client side to notify the server that the armor
@@ -17,10 +18,10 @@ public class ArmorSetsSwitchSetsPacket {
 	public ArmorSetsSwitchSetsPacket() {
 	}
 
-	public ArmorSetsSwitchSetsPacket(FriendlyByteBuf p_179567_) {
+	public ArmorSetsSwitchSetsPacket(PacketBuffer p_179567_) {
 	}
 
-	public void write(FriendlyByteBuf p_133937_) {
+	public void write(PacketBuffer p_133937_) {
 	}
 
 	/**

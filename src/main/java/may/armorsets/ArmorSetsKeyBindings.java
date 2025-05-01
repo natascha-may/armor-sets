@@ -2,16 +2,14 @@ package may.armorsets;
 
 import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
-import net.minecraft.client.KeyMapping;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ArmorSetsKeyBindings {
 
-	public static final KeyMapping AMOR_SETS_SWITCH_KEY = new KeyMapping("Armor Sets Switch", 86,
-			KeyMapping.CATEGORY_INTERFACE);
-	
-	
+	public static final KeyBinding AMOR_SETS_SWITCH_KEY = new KeyBinding("Armor Sets Switch", 86,
+			"key.categories.ui");
 
 	@SubscribeEvent
 	public static void onKeyPress(InputEvent.KeyInputEvent e) {

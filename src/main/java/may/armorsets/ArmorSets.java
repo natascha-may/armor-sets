@@ -1,6 +1,11 @@
 package may.armorsets;
 
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.GameRules;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,11 +13,6 @@ import may.armorsets.config.Config;
 import may.armorsets.config.ConfigOptions;
 import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -27,6 +27,8 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemStackHandler;
+
+import java.util.Iterator;
 
 /**
  * The base class of this mod. Here, registering and general setup is handled.
@@ -74,12 +76,12 @@ public class ArmorSets {
 
 	@SubscribeEvent
 	public void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
-		if (event.getObject() instanceof Player) {
+		if (event.getObject() instanceof PlayerEntity) {
 			event.addCapability(new ResourceLocation(MODID, "armor_set"), new ArmorSetsCapabilityProvider());
 		}
 	}
 
-	public static boolean switchSets(Player player) {
+	public static boolean switchSets(PlayerEntity player) {
 		ArmorSets.LOGGER.debug("Switch Armor Sets");
 
 		// get the ItemStackHandler
@@ -90,23 +92,20 @@ public class ArmorSets {
 		ItemStackHandler cap = capOptional.orElse(null);
 
 		// switch with armor from player inventory
-
 		for (int i = 0; i < SIZE_OF_SET; i++) {
-
 			// EXTRACT FROM INVENTORY
-			ItemStack stackFromInv = player.getInventory().armor.get(i);
-			ArmorSets.LOGGER.debug("extracted " + stackFromInv.toString() + " from inventory");
+			ItemStack stackFromInv = player.inventory.armor.get(i);
+			ArmorSets.LOGGER.debug("extracted " + stackFromInv + " from inventory");
 
 			// EXTRACT FROM ARMOR SET
 			ItemStack stackFromSet = cap.getStackInSlot(i);
-			ArmorSets.LOGGER.debug("extracted " + stackFromSet.toString() + " from armor set");
+			ArmorSets.LOGGER.debug("extracted " + stackFromSet + " from armor set");
 
 			// INSERT TO INVENTORY
-			player.getInventory().armor.set(i, stackFromSet);
+			player.inventory.armor.set(i, stackFromSet);
 
 			// INSERT TO ARMOR SET
 			cap.setStackInSlot(i, stackFromInv);
-
 		}
 		return true;
 	}
@@ -114,7 +113,7 @@ public class ArmorSets {
 	@SubscribeEvent
 	public void onPlayerDeath(final LivingDeathEvent event) {
 		if(event.getEntity().level.isClientSide) return;
-		if (!(event.getEntity() instanceof Player))
+		if (!(event.getEntity() instanceof PlayerEntity))
 			return;
 
 		if(ConfigOptions.followVanillaKeepInventoryRule.get()) {
@@ -126,7 +125,7 @@ public class ArmorSets {
 			return;
 		}
 		
-		dropAllItems((Player) event.getEntity());
+		dropAllItems((PlayerEntity) event.getEntity());
 	}
 
 	
@@ -158,7 +157,7 @@ public class ArmorSets {
 	 * 
 	 * @param player
 	 */
-	private void dropAllItems(Player player) {
+	private void dropAllItems(PlayerEntity player) {
 		LazyOptional<ItemStackHandler> capOptional = player.getCapability(ArmorSetsCapabilityProvider.AMOR_SET_CAP, null);
 		if (!capOptional.isPresent())
 			return;
@@ -175,7 +174,7 @@ public class ArmorSets {
 	 * @param origP
 	 * @param newP
 	 */
-	private void cloneSet(Player origP, Player newP) {
+	private void cloneSet(PlayerEntity origP, PlayerEntity newP) {
 		LazyOptional<ItemStackHandler> capOptionalOrig = origP.getCapability(ArmorSetsCapabilityProvider.AMOR_SET_CAP, null);
 		if (!capOptionalOrig.isPresent())
 			return;

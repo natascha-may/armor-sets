@@ -3,11 +3,11 @@ package may.armorsets.networking;
 import java.util.function.Supplier;
 
 import may.armorsets.ArmorSets;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 /**
  * The packet handler receives packets that allow for communication between
@@ -26,7 +26,7 @@ public class ArmorSetsPacketHandler {
 	public static void handleSwitchSets(ArmorSetsSwitchSetsPacket msg, Supplier<NetworkEvent.Context> ctx) {
 		ctx.get().enqueueWork(() -> {
 			// Work that needs to be thread-safe (most work)
-			ServerPlayer sender = ctx.get().getSender(); // the client that sent this packet
+			ServerPlayerEntity sender = ctx.get().getSender(); // the client that sent this packet
 			// Do stuff
 			if (!sender.isSpectator()) {
 				ArmorSets.LOGGER.debug("Handle switch sets in PacketHandler");

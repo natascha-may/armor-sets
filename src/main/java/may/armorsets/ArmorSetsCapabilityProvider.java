@@ -1,10 +1,9 @@
 package may.armorsets;
 
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemStackHandler;
@@ -16,12 +15,12 @@ import net.minecraftforge.items.ItemStackHandler;
  * @author Natascha May
  * @since 1.18.2-1.0
  */
-public class ArmorSetsCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
+public class ArmorSetsCapabilityProvider implements ICapabilitySerializable<CompoundNBT> {
 
 	private ItemStackHandler armorSet = new ItemStackHandler(ArmorSets.SIZE_OF_SET);
 
-	public static final Capability<ItemStackHandler> AMOR_SET_CAP = CapabilityManager.get(new CapabilityToken<>() {
-	});
+	@CapabilityInject(ItemStackHandler.class)
+	static Capability<ItemStackHandler> AMOR_SET_CAP = null;
 	private LazyOptional<ItemStackHandler> armorSetOptional = LazyOptional.of(() -> armorSet);
 
 	@Override
@@ -32,12 +31,12 @@ public class ArmorSetsCapabilityProvider implements ICapabilitySerializable<Comp
 	}
 
 	@Override
-	public CompoundTag serializeNBT() {
+	public CompoundNBT serializeNBT() {
 		return armorSet.serializeNBT();
 	}
 
 	@Override
-	public void deserializeNBT(CompoundTag nbt) {
+	public void deserializeNBT(CompoundNBT nbt) {
 		armorSet.deserializeNBT(nbt);
 	}
 

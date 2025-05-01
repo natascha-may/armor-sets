@@ -1,5 +1,6 @@
 package may.armorsets;
 
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,7 +34,6 @@ import net.minecraftforge.items.ItemStackHandler;
  * 1.0).
  * 
  * @author Natascha May
- * @since 1.18.2-1.0
  */
 //The value here should match an entry in the META-INF/mods.toml file
 @Mod("armorsets")
@@ -68,7 +68,7 @@ public class ArmorSets {
 	
 	
 	private void onFMLClientSetup_registerKeyBindings(final FMLClientSetupEvent event) {
-		net.minecraftforge.client.ClientRegistry.registerKeyBinding(ArmorSetsKeyBindings.AMOR_SETS_SWITCH_KEY);
+		ClientRegistry.registerKeyBinding(ArmorSetsKeyBindings.AMOR_SETS_SWITCH_KEY);
 	}
 	
 

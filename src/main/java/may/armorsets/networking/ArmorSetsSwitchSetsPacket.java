@@ -3,7 +3,7 @@ package may.armorsets.networking;
 import java.util.function.Supplier;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 /**
  * This packet is sent from the client side to notify the server that the armor

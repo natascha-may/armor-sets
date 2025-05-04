@@ -119,12 +119,12 @@ public class ArmorSets {
 		if (!(event.getEntity() instanceof Player))
 			return;
 
-		if(ConfigOptions.followVanillaKeepInventoryRule.get()) {
+		if(ConfigOptions.followVanillaKeepInventoryRule()) {
 			if(event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 				return;
 		}
 		
-		if(ConfigOptions.keepArmorSetOnDeath.get()) {
+		if(ConfigOptions.keepArmorSetOnDeath()) {
 			return;
 		}
 		
@@ -138,11 +138,11 @@ public class ArmorSets {
 		if(event.getPlayer().level.isClientSide) return;
 
 		if(event.isWasDeath()) {
-			if(ConfigOptions.followVanillaKeepInventoryRule.get()) {
+			if(ConfigOptions.followVanillaKeepInventoryRule()) {
 				if(!event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 					return;
 			}else {
-				if(!ConfigOptions.keepArmorSetOnDeath.get()) {
+				if(!ConfigOptions.keepArmorSetOnDeath()) {
 					return;
 				}
 			}

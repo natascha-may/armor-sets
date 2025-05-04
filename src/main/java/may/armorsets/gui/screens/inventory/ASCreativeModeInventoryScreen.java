@@ -14,8 +14,9 @@ import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class ASCreativeModeInventoryScreen extends CreativeModeInventoryScreen {
-    private static final ResourceLocation MY_BUTTON_LOCATION = new ResourceLocation(ArmorSets.MODID, "textures/gui/my_button.png");
+    private static final ResourceLocation MY_BUTTON_LOCATION = new ResourceLocation(ArmorSets.MODID, "textures/gui/swap_sets_button.png");
     private ImageButton swapSetsImageButton;
+    private static final int BUTTON_SIZE = 18;
 
     public ASCreativeModeInventoryScreen(Player player) {
         super(player);
@@ -26,16 +27,16 @@ public class ASCreativeModeInventoryScreen extends CreativeModeInventoryScreen {
         super.init();
         ArmorSets.LOGGER.debug("init");
         swapSetsImageButton = new ImageButton(
-                swapSetsImageButtonPosX(),
-                swapSetsImageButtonPosY(),
-                18, // width
-                18, // height
-                0, // xTexStart?
-                0, // yTexStart?
-                0, // no idea, reused height as default
+                swapSetsImageButtonPosX(), // x
+                swapSetsImageButtonPosY(), // y
+                BUTTON_SIZE, // width
+                BUTTON_SIZE, // height
+                0, // xTexStart
+                0, // yTexStart
+                BUTTON_SIZE, // yDiffTex, diff in yTexStart for hover texture
                 MY_BUTTON_LOCATION,
-                18, // tex width?
-                18, // tex height?
+                BUTTON_SIZE, // width of texture map
+                BUTTON_SIZE * 2, // height of texture map
                 button -> onButtonPress()
         );
     }

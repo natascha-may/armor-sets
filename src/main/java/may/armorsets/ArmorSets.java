@@ -44,7 +44,7 @@ public class ArmorSets {
 
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	public static int packetMsgId = 0;
+	private static int packetMsgId = 0;
 
 	static final int SIZE_OF_SET = 4;
 
@@ -58,18 +58,18 @@ public class ArmorSets {
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		// Register the setup method for modloading
-		bus.addListener(this::onFMLClientSetup_registerKeyBindings);
+		bus.addListener(this::registerKeyBindingsOnFMLClientSetup);
 
 		// networking
 		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsSwitchSetsPacket.class,
-				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsSwitchSetsPacket(buff),
-				(msg, ctx) -> ArmorSetsSwitchSetsPacket.handle(msg, ctx));
+                ArmorSetsSwitchSetsPacket::write, ArmorSetsSwitchSetsPacket::new,
+                ArmorSetsSwitchSetsPacket::handle);
 		
 		Config.loadConfig(Config.config, FMLPaths.CONFIGDIR.get().resolve(MODID + ".toml").toString());
 	}
 	
 	
-	private void onFMLClientSetup_registerKeyBindings(final FMLClientSetupEvent event) {
+	private void registerKeyBindingsOnFMLClientSetup(final FMLClientSetupEvent event) {
 		net.minecraftforge.client.ClientRegistry.registerKeyBinding(ArmorSetsKeyBindings.AMOR_SETS_SWITCH_KEY);
 	}
 	

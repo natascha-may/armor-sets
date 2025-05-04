@@ -29,7 +29,7 @@ displayURL="https://github.com/tatschi/armor-sets" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
-credits="Love you Foxi :)" #optional
+#credits="" #optional
 # A text field displayed in the mod UI
 authors="Natascha May" #optional
 # The description text for the mod (multi line!) (#mandatory)

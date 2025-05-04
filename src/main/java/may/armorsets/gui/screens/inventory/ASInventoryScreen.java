@@ -7,6 +7,7 @@ import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  * @since 1.18.2-1.0
  */
 @OnlyIn(Dist.CLIENT)
-public class ASInventoryScreen extends InventoryScreen{
+public class ASInventoryScreen extends InventoryScreen {
 	private static final ResourceLocation MY_BUTTON_LOCATION = new ResourceLocation(ArmorSets.MODID, "textures/gui/my_button.png");
 	private ImageButton swapSetsImageButton;
 
@@ -58,13 +59,13 @@ public class ASInventoryScreen extends InventoryScreen{
 	
 	@SubscribeEvent
 	public static void setScreen(ScreenOpenEvent event) {
-		if(!(event.getScreen() instanceof InventoryScreen)) {
+		if(event.getScreen() instanceof InventoryScreen && !(event.getScreen() instanceof ASInventoryScreen)) {
+			event.setScreen(new ASInventoryScreen(Minecraft.getInstance().player));
 			return;
 		}
-		if(event.getScreen() instanceof ASInventoryScreen) {
-			return;
+		if (event.getScreen() instanceof CreativeModeInventoryScreen && !(event.getScreen() instanceof ASCreativeModeInventoryScreen)) {
+			event.setScreen(new ASCreativeModeInventoryScreen(Minecraft.getInstance().player));
 		}
-		event.setScreen(new ASInventoryScreen(Minecraft.getInstance().player));
 	}
 
 	private int swapSetsImageButtonPosX() {

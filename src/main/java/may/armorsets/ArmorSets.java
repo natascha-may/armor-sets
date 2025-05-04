@@ -56,6 +56,7 @@ public class ArmorSets {
 		MinecraftForge.EVENT_BUS.register(ArmorSetsKeyBindings.class);
 		MinecraftForge.EVENT_BUS.register(ASInventoryScreen.class);
 
+
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		// Register the setup method for modloading
 		bus.addListener(this::registerKeyBindingsOnFMLClientSetup);

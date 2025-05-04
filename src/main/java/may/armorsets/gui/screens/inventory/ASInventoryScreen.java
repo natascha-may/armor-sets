@@ -3,6 +3,7 @@ package may.armorsets.gui.screens.inventory;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import may.armorsets.ArmorSets;
+import may.armorsets.config.ConfigOptions;
 import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
 import net.minecraft.client.Minecraft;
@@ -59,6 +60,9 @@ public class ASInventoryScreen extends InventoryScreen {
 	
 	@SubscribeEvent
 	public static void setScreen(ScreenOpenEvent event) {
+		if(!ConfigOptions.showSwapSetsButtonInInventory()){
+			return;
+		}
 		if(event.getScreen() instanceof InventoryScreen && !(event.getScreen() instanceof ASInventoryScreen)) {
 			event.setScreen(new ASInventoryScreen(Minecraft.getInstance().player));
 			return;

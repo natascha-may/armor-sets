@@ -28,7 +28,7 @@ public class ConfigOptions {
 				.define(ArmorSets.MODID + ".keepArmorSetOnDeath", false);
 
 		showSwapSetsButtonInInventory = builder
-				.comment("If set to true, a button in the inventory will be displayed that swaps the armor sets when pressed")
+				.comment("If set to true, a button in the inventory will be displayed that swaps the armor sets when pressed.")
 				.define(ArmorSets.MODID + ".showSwapSetsButtonInInventory", true);
 	}
 

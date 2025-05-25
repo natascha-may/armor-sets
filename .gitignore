@@ -76,11 +76,8 @@ out
 
 # gradle
 build
-*.gradle
-gradle
-*.bat
+.gradle
 gradle.properties
-gradlew
 # exception for the build.gradle (include this file in git)
 !build.gradle
 

@@ -1,17 +1,17 @@
 package may.armorsets.gui.screens.inventory;
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import may.armorsets.ArmorSets;
 import may.armorsets.config.ConfigOptions;
 import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.client.gui.screen.inventory.CreativeScreen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -29,7 +29,7 @@ public class ASInventoryScreen extends InventoryScreen {
 	private ImageButton swapSetsImageButton;
 	private static final int BUTTON_SIZE = 18;
 
-	public ASInventoryScreen(Player player) {
+	public ASInventoryScreen(PlayerEntity player) {
 		super(player);
 	}
 
@@ -50,11 +50,11 @@ public class ASInventoryScreen extends InventoryScreen {
 				BUTTON_SIZE * 2, // height of texture map
 				button -> onButtonPress()
 		);
-		this.addRenderableWidget(swapSetsImageButton);
+		this.addButton(swapSetsImageButton);
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		swapSetsImageButton.setPosition(this.leftPos + 76, this.topPos + 62 - 19);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 	}
@@ -68,7 +68,7 @@ public class ASInventoryScreen extends InventoryScreen {
 			event.setGui(new ASInventoryScreen(Minecraft.getInstance().player));
 			return;
 		}
-		if (event.getGui() instanceof CreativeModeInventoryScreen && !(event.getGui() instanceof ASCreativeModeInventoryScreen)) {
+		if (event.getGui() instanceof CreativeScreen && !(event.getGui() instanceof ASCreativeModeInventoryScreen)) {
 			event.setGui(new ASCreativeModeInventoryScreen(Minecraft.getInstance().player));
 		}
 	}

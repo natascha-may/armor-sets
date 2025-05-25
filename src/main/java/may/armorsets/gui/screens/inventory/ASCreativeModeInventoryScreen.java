@@ -3,21 +3,21 @@ package may.armorsets.gui.screens.inventory;
 import may.armorsets.ArmorSets;
 import may.armorsets.networking.ArmorSetsPacketHandler;
 import may.armorsets.networking.ArmorSetsSwitchSetsPacket;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.client.gui.screen.inventory.CreativeScreen;
+import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class ASCreativeModeInventoryScreen extends CreativeModeInventoryScreen {
+public class ASCreativeModeInventoryScreen extends CreativeScreen {
     private static final ResourceLocation MY_BUTTON_LOCATION = new ResourceLocation(ArmorSets.MODID, "textures/gui/swap_sets_button.png");
     private ImageButton swapSetsImageButton;
     private static final int BUTTON_SIZE = 18;
 
-    public ASCreativeModeInventoryScreen(Player player) {
+    public ASCreativeModeInventoryScreen(PlayerEntity player) {
         super(player);
     }
 
@@ -41,11 +41,11 @@ public class ASCreativeModeInventoryScreen extends CreativeModeInventoryScreen {
     }
 
     @Override
-    protected void selectTab(CreativeModeTab tab){
-        if(tab == CreativeModeTab.TAB_INVENTORY){
-            this.addRenderableWidget(swapSetsImageButton);
+    protected void selectTab(ItemGroup tab){
+        if(tab == ItemGroup.TAB_INVENTORY){
+            this.addButton(swapSetsImageButton);
         }else {
-            this.removeWidget(swapSetsImageButton);
+            this.buttons.remove(swapSetsImageButton);
         }
         super.selectTab(tab);
     }

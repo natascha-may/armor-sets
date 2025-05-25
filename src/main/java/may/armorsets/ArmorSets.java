@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.GameRules;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import may.armorsets.gui.screens.inventory.ASInventoryScreen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,7 +46,7 @@ public class ArmorSets {
 
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	public static int packetMsgId = 0;
+	private static int packetMsgId = 0;
 
 	static final int SIZE_OF_SET = 4;
 
@@ -55,6 +56,8 @@ public class ArmorSets {
 		
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(ArmorSetsKeyBindings.class);
+		MinecraftForge.EVENT_BUS.register(ASInventoryScreen.class);
+
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		// Register the setup method for modloading
@@ -62,8 +65,8 @@ public class ArmorSets {
 
 		// networking
 		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsSwitchSetsPacket.class,
-				(msg, buff) -> msg.write(buff), (buff) -> new ArmorSetsSwitchSetsPacket(buff),
-				(msg, ctx) -> ArmorSetsSwitchSetsPacket.handle(msg, ctx));
+                ArmorSetsSwitchSetsPacket::write, ArmorSetsSwitchSetsPacket::new,
+                ArmorSetsSwitchSetsPacket::handle);
 		
 		Config.loadConfig(Config.config, FMLPaths.CONFIGDIR.get().resolve(MODID + ".toml").toString());
 	}
@@ -116,12 +119,12 @@ public class ArmorSets {
 		if (!(event.getEntity() instanceof PlayerEntity))
 			return;
 
-		if(ConfigOptions.followVanillaKeepInventoryRule.get()) {
+		if(ConfigOptions.followVanillaKeepInventoryRule()) {
 			if(event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 				return;
 		}
 		
-		if(ConfigOptions.keepArmorSetOnDeath.get()) {
+		if(ConfigOptions.keepArmorSetOnDeath()) {
 			return;
 		}
 		
@@ -135,11 +138,11 @@ public class ArmorSets {
 		if(event.getPlayer().level.isClientSide) return;
 
 		if(event.isWasDeath()) {
-			if(ConfigOptions.followVanillaKeepInventoryRule.get()) {
+			if(ConfigOptions.followVanillaKeepInventoryRule()) {
 				if(!event.getEntity().getServer().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 					return;
 			}else {
-				if(!ConfigOptions.keepArmorSetOnDeath.get()) {
+				if(!ConfigOptions.keepArmorSetOnDeath()) {
 					return;
 				}
 			}

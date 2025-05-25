@@ -59,7 +59,7 @@ public class ArmorSets {
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		// Register the setup method for modloading
-		bus.addListener(this::registerKeyBindingsOnFMLClientSetup);
+		bus.addListener(this::onFMLClientSetup_registerKeyBindings);
 
 		// networking
 		ArmorSetsPacketHandler.INSTANCE.registerMessage(packetMsgId++, ArmorSetsSwitchSetsPacket.class,

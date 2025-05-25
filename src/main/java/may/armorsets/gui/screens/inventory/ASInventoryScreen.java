@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ScreenOpenEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
@@ -60,16 +60,16 @@ public class ASInventoryScreen extends InventoryScreen {
 	}
 	
 	@SubscribeEvent
-	public static void setScreen(ScreenOpenEvent event) {
+	public static void setScreen(GuiOpenEvent event) {
 		if(!ConfigOptions.showSwapSetsButtonInInventory()){
 			return;
 		}
-		if(event.getScreen() instanceof InventoryScreen && !(event.getScreen() instanceof ASInventoryScreen)) {
-			event.setScreen(new ASInventoryScreen(Minecraft.getInstance().player));
+		if(event.getGui() instanceof InventoryScreen && !(event.getGui() instanceof ASInventoryScreen)) {
+			event.setGui(new ASInventoryScreen(Minecraft.getInstance().player));
 			return;
 		}
-		if (event.getScreen() instanceof CreativeModeInventoryScreen && !(event.getScreen() instanceof ASCreativeModeInventoryScreen)) {
-			event.setScreen(new ASCreativeModeInventoryScreen(Minecraft.getInstance().player));
+		if (event.getGui() instanceof CreativeModeInventoryScreen && !(event.getGui() instanceof ASCreativeModeInventoryScreen)) {
+			event.setGui(new ASCreativeModeInventoryScreen(Minecraft.getInstance().player));
 		}
 	}
 

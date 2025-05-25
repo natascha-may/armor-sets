@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class ASCreativeModeInventoryScreen extends CreativeModeInventoryScreen {
@@ -42,7 +41,7 @@ public class ASCreativeModeInventoryScreen extends CreativeModeInventoryScreen {
     }
 
     @Override
-    protected void selectTab(@NotNull CreativeModeTab tab){
+    protected void selectTab(CreativeModeTab tab){
         if(tab == CreativeModeTab.TAB_INVENTORY){
             this.addRenderableWidget(swapSetsImageButton);
         }else {

@@ -77,9 +77,6 @@ out
 # gradle
 build
 .gradle
-gradle.properties
-# exception for the build.gradle (include this file in git)
-!build.gradle
 
 # other
 eclipse
